@@ -1,0 +1,54 @@
+# Outage Detector, concept demo. Three containers: MariaDB, the Flask backend
+# and the nginx frontend. No real monitoring system is contacted; the backend
+# loads made-up demo rows into the database when it starts.
+#
+#   cp .env.example .env     # set DB_PASSWORD
+#   docker compose up --build
+#   open http://localhost:5431
+
+name: outage_report
+
+services:
+  db:
+    image: mariadb:11.1
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: outage_report
+      MARIADB_USER: outage
+      MARIADB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: outage-report-backend:${TAG:-latest}
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_CONFIG: production
+      DATABASE_URL: mysql+pymysql://outage:${DB_PASSWORD}@db:3306/outage_report
+    ports:
+      - "${BACKEND_BIND:-127.0.0.1}:${BACKEND_PORT:-5430}:5410"
+
+  frontend:
+    image: outage-report-frontend:${TAG:-latest}
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # Same-origin: nginx proxies /backend/ to the backend container.
+      API_BASE_URL: /backend
+    ports:
+      - "${FRONTEND_PORT:-5431}:80"
+
+volumes:
+  dbdata:

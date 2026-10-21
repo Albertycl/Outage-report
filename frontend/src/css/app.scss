@@ -1,0 +1,322 @@
+// Global application styling.
+//
+// The dashboard is read at a glance, often on a wall screen, so the rules here
+// are about hierarchy: one neutral page surface, cards that sit quietly on it,
+// and saturated colour reserved for numbers that mean something is wrong.
+
+:root {
+  // Surfaces
+  --app-bg:            #F1F5F9;
+  --app-surface:       #FFFFFF;
+  --app-surface-muted: #F8FAFC;
+  --app-header:        #0F172A;
+
+  // Lines
+  --app-border:        #E2E8F0;
+  --app-border-strong: #CBD5E1;
+
+  // Ink
+  --app-ink:           #0F172A;
+  --app-ink-muted:     #475569;
+  --app-ink-subtle:    #64748B;
+
+  // Brand + status, mirrored from quasar.variables.scss so plain CSS can use them
+  --app-primary:       #2563EB;
+  --app-positive:      #16A34A;
+  --app-warning:       #D97706;
+  --app-negative:      #DC2626;
+
+  // Elevation. Two steps only - resting and hover - so cards do not compete.
+  --app-shadow:       0 1px 2px rgba(15, 23, 42, 0.06),
+                      0 1px 3px rgba(15, 23, 42, 0.04);
+  --app-shadow-hover: 0 4px 12px rgba(15, 23, 42, 0.08),
+                      0 2px 4px rgba(15, 23, 42, 0.04);
+
+  --app-radius:        12px;
+}
+
+body {
+  background: var(--app-bg);
+  color: var(--app-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Numbers that sit above and below one another (alert counts, sensor totals)
+// must line up, so every figure gets the same advance width.
+.tabular-nums,
+.metric-value {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+// ---------------------------------------------------------------------------
+// Page scaffolding
+// ---------------------------------------------------------------------------
+
+// One width for every page, so the header, the section rails and the cards all
+// share a left edge.
+.app-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px;
+
+  @media (max-width: 599px) {
+    padding: 16px;
+  }
+}
+
+// A titled block of the dashboard. The accent is a 3px rail rather than the
+// full-bleed pastel background it replaces: it still tells HostMonitor from
+// PRTG from JKB, without shouting over the data.
+.app-section {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.app-section__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--app-border);
+  background: var(--app-surface-muted);
+}
+
+.app-section__accent {
+  width: 3px;
+  align-self: stretch;
+  min-height: 22px;
+  border-radius: 2px;
+  background: var(--app-ink-subtle);
+}
+
+.app-section--hostmonitor .app-section__accent { background: var(--app-warning); }
+.app-section--prtg        .app-section__accent { background: var(--app-primary); }
+.app-section--jkb         .app-section__accent { background: #0D9488; }
+
+.app-section__title {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--app-ink);
+}
+
+.app-section__subtitle {
+  font-size: 12px;
+  color: var(--app-ink-subtle);
+}
+
+.app-section__body {
+  padding: 20px;
+
+  @media (max-width: 599px) {
+    padding: 14px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Page head
+// ---------------------------------------------------------------------------
+
+// Title on the left, this page's actions on the right. Every page uses it, so
+// the eye finds the same things in the same place moving between them.
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.page-head__title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--app-ink);
+}
+
+.page-head__sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--app-ink-subtle);
+}
+
+.page-head__actions {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 599px) {
+  .page-head__actions {
+    width: 100%;
+  }
+
+  .page-head__actions .q-btn {
+    flex: 1;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Cards
+// ---------------------------------------------------------------------------
+
+// Every metric card on the dashboard uses this, so HostMonitor, PRTG and JKB
+// tiles line up and hover the same way instead of each inventing a shadow.
+.app-card {
+  background: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  box-shadow: var(--app-shadow);
+  transition: box-shadow 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.app-card:hover {
+  box-shadow: var(--app-shadow-hover);
+  border-color: var(--app-border-strong);
+  transform: translateY(-1px);
+}
+
+// Card header: the infra name, small and upper-case. It labels the numbers
+// below it; it is not a headline in its own right.
+.app-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.app-card__title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--app-ink-muted);
+}
+
+// A single figure with its caption underneath.
+.metric-value {
+  font-size: 44px;
+  line-height: 1.05;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--app-ink);
+}
+
+.metric-value--alert { color: var(--app-negative); }
+.metric-value--quiet { color: var(--app-ink-subtle); }
+
+.metric-label {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--app-ink-subtle);
+}
+
+// ---------------------------------------------------------------------------
+// Status strip (poller / reader health)
+// ---------------------------------------------------------------------------
+
+// The pastel banners these replace filled a whole row with colour whether or
+// not anything was wrong. Here the state lives in one dot and the border, so a
+// healthy pipeline is quiet and a stale one is not.
+.status-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  border: 1px solid var(--app-border);
+  border-left: 3px solid var(--app-ink-subtle);
+  border-radius: 8px;
+  background: var(--app-surface-muted);
+}
+
+.status-strip--ok          { border-left-color: var(--app-positive); }
+.status-strip--degraded    { border-left-color: var(--app-warning);
+                             background: #FFFBEB; border-color: #FDE68A; }
+.status-strip--bad         { border-left-color: var(--app-negative);
+                             background: #FEF2F2; border-color: #FECACA; }
+
+.status-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--app-ink-subtle);
+}
+
+.status-dot--ok       { background: var(--app-positive); }
+.status-dot--degraded { background: var(--app-warning); }
+.status-dot--bad      { background: var(--app-negative); }
+
+// A live pipeline is the normal state, so only a broken one animates.
+.status-dot--bad {
+  animation: status-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.45); }
+  50%      { box-shadow: 0 0 0 5px rgba(220, 38, 38, 0); }
+}
+
+.status-strip__headline {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--app-ink);
+  text-decoration: none;
+}
+
+.status-strip__headline:hover { text-decoration: underline; }
+
+.status-strip__detail {
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--app-ink-muted);
+}
+
+// On a phone the per-infra readings run together and wrap mid-sentence, so
+// each infra takes its own line. The selector is deliberately long enough to
+// outrank the scoped rule in each status component.
+@media (max-width: 599px) {
+  .status-strip {
+    align-items: flex-start;
+  }
+
+  .status-strip .status-strip__detail .status-strip__infra {
+    display: flex;
+    width: 100%;
+    margin-right: 0;
+    padding: 1px 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Misc
+// ---------------------------------------------------------------------------
+
+.app-link {
+  color: var(--app-primary);
+  text-decoration: none;
+}
+
+.app-link:hover { text-decoration: underline; }
+
+// Quasar's default table chrome is heavier than the rest of the page.
+.q-table thead th {
+  font-weight: 600;
+  color: var(--app-ink-muted);
+  background: var(--app-surface-muted);
+}

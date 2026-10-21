@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+.env
+.env.*
+!.env.example
+docker-compose.lab.yml
+node_modules/
+frontend/dist/
+frontend/.quasar/
+*.bak
